@@ -1,13 +1,23 @@
 import React from "react";
 
-const ContactCard = ({name, email, phone}) => {
-    return(
-        <div className="contact-card">
-            <h3>{name}</h3>
-            <p>Email: {email}</p>
-            <p>Phone: {phone}</p>
-        </div>
-    );
+// We now pass the whole contact object, login status, and delete function
+const ContactCard = ({ contact, isLoggedIn, onDelete }) => {
+  return (
+    <div className="contact-card">
+      {/* NEW: Show delete button only if logged in */}
+      {isLoggedIn && (
+        <button
+          className="delete-button"
+          onClick={() => onDelete(contact.id)}
+        >
+          &times;
+        </button>
+      )}
+      <h3>{contact.name}</h3>
+      <p>Email: {contact.email}</p>
+      <p>Phone: {contact.phone}</p>
+    </div>
+  );
 };
 
 export default ContactCard;

@@ -1,42 +1,59 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+/* --- NEW LOGIN BOX STYLES --- */
+.login-box {
+  background-color: #f0f4f8;
+  border: 1px solid #d6e0ea;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+.login-box p {
+  margin: 0 0 10px 0;
+}
+.login-box input {
+  width: 100%;
+  padding: 8px;
+  margin-right: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+.login-box button, .logout-button {
+  width: 100%;
+  margin-top: 10px;
+  padding: 8px 12px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.logout-button {
+  background-color: #dc3545;
+}
+
+/* --- NEW DELETE BUTTON STYLES --- */
+.contact-card {
+  position: relative; /* Needed for positioning the delete button */
+}
+
+.delete-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 24px;
   text-align: center;
+  padding: 0;
+  cursor: pointer;
+  opacity: 0.7;
 }
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
+.delete-button:hover {
+  opacity: 1;
 }
