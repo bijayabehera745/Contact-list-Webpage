@@ -1,19 +1,14 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import './App.css'; // Make sure you have this file
+import './App.css';
 
 function App() {
   const [contacts, setContacts] = useState([]);
-
-  // API URL for local development
-  // OLD:
-  // const API_URL = 'http://127.0.0.1:8000/api/contacts/';
-
-  // NEW:
-const API_URL = '/api/contacts/';
+  
+  // This URL MUST point to your live Render backend
+  const API_URL = 'https://contact-app-oa5s.onrender.com/api/contacts/';
 
   useEffect(() => {
-    // Function to fetch contacts
     const fetchContacts = () => {
       axios.get(API_URL)
         .then(res => {
@@ -23,9 +18,9 @@ const API_URL = '/api/contacts/';
           console.error("Error fetching contacts:", err);
         });
     };
-
+    
     fetchContacts();
-  }, []); // The empty array [] means this runs only once
+  }, []);
 
   return (
     <div className="app">
