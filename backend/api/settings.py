@@ -9,20 +9,15 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
-
 # SECRET KEY - This MUST be set in Render's Environment Variables
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
-# DEBUG - Set to False for production
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-# ALLOWED_HOSTS - HARD-CODED FIX
+# ALLOWED_HOSTS - This list is for BACKEND's domain names
 ALLOWED_HOSTS = [
-    'contact-app-oa5s.onrender.com',           # Your Render backend URL
-    'contact-list-webpage-qqra.vercel.app',  # Your Vercel frontend URL
-    '127.0.0.1',                             # For local testing
+    'contact-app-oa5s.onrender.com',  # Render backend
+    '127.0.0.1',                      # For local testing
 ]
 
 # Application definition
@@ -33,11 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
-    # Your apps
     'contacts',
-    
-    # 3rd Party Apps
     'rest_framework',
     'corsheaders',
 ]
@@ -46,8 +37,8 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     
-    # Add CorsMiddleware
-    'corsheaders.middleware.CorsMiddleware',
+    # CorsMiddleware must be as high as possible, especially before CommonMiddleware
+    'corsheaders.middleware.CorsMiddleware', 
     
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -85,11 +76,12 @@ DATABASES = {
     )
 }
 
-# CORS_ALLOWED_ORIGINS - HARD-CODED FIX
+# This list is for YOUR FRONTEND's domain names
 CORS_ALLOWED_ORIGINS = [
-    'https://contact-list-webpage-qqra.vercel.app',  # Your Vercel frontend
-    'http://127.0.0.1:5173',                         # Local React
-    'http://localhost:5173',                        # Local React
+    'https://contact-list-webpage-qqra-gdhgs9m2t.vercel.app',
+    'https://contact-list-webpage-qqra.vercel.app',         
+    'http://127.0.0.1:5173',                                
+    'http://localhost:5173',                                
 ]
 
 # Password validation
