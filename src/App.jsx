@@ -10,7 +10,7 @@ function App() {
   // const API_URL = 'http://127.0.0.1:8000/api/contacts/';
 
   // NEW:
-  const API_URL = '/api/contacts/';
+const API_URL = '/api/contacts/';
 
   useEffect(() => {
     // Function to fetch contacts
