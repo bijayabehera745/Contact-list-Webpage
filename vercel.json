@@ -2,24 +2,25 @@
   "version": 2,
   "builds": [
     {
-      "src": "backend/manage.py",
+      "src": "backend/wsgi.py",
       "use": "@vercel/python",
       "config": {
         "runtime": "python3.11",
-        "maxLambdaSize": "15mb",
         "requirements": "backend/requirements.txt"
       }
     },
     {
       "src": "package.json",
       "use": "@vercel/static-build",
-      "config": { "distDir": "dist" }
+      "config": {
+        "distDir": "dist"
+      }
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "backend/manage.py"
+      "dest": "backend/wsgi.py"
     },
     {
       "handle": "filesystem"
