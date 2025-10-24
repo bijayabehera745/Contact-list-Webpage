@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'contacts',
     'rest_framework',
     'corsheaders',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -91,6 +92,19 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
+
+# This tells DRF to use Token auth and sets the permissions
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        # This allows us to use 'Authorization: Token <key>'
+        'rest_framework.authentication.TokenAuthentication', 
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        # This is the magic line:
+        # It allows anyone to VIEW (GET) but requires login for ADD/DELETE (POST/DELETE)
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ]
+}
 
 # Internationalization
 LANGUAGE_CODE = 'en-us'
