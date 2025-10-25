@@ -1,5 +1,3 @@
-# --- FILENAME: backend/api/settings.py ---
-
 import os
 from dotenv import load_dotenv
 from pathlib import Path
@@ -89,10 +87,10 @@ DATABASES = {
 }
 
 # --- FIX for the CORS Error ---
-# This list is for YOUR FRONTEND's domain names
+# This list is for FRONTEND's domain names
 CORS_ALLOWED_ORIGINS = [
     'https://contact-list-webpage-qqra-a494f6cia.vercel.app/', # The NEW URL from your error
-    'https://contact-list-webpage-qqra.vercel.app',         # Your main Vercel URL
+    'https://contact-list-webpage-qqra.vercel.app',         # main Vercel URL
     'http://127.0.0.1:5173',                                # Local React
     'http://localhost:5173',                                # Local React
 ]
