@@ -89,7 +89,7 @@ DATABASES = {
 # --- FIX for the CORS Error ---
 # This list is for FRONTEND's domain names
 CORS_ALLOWED_ORIGINS = [
-    'https://contact-list-webpage-qqra-a494f6cia.vercel.app/', # The NEW URL from your error
+    'https://contact-list-webpage-qqra-a494f6cia.vercel.app', # The NEW URL from your error
     'https://contact-list-webpage-qqra.vercel.app',         # main Vercel URL
     'https://contact-list-webpage.vercel.app',
     'http://127.0.0.1:5173',                                # Local React
