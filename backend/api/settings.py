@@ -49,8 +49,6 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    
-    # CorsMiddleware must be as high as possible
     'corsheaders.middleware.CorsMiddleware', 
     
     'django.middleware.common.CommonMiddleware',
@@ -93,7 +91,7 @@ DATABASES = {
 # --- FIX for the CORS Error ---
 # This list is for YOUR FRONTEND's domain names
 CORS_ALLOWED_ORIGINS = [
-    'https://contact-list-webpage-qqra-gdhgs9m2t.vercel.app', # The NEW URL from your error
+    'https://contact-list-webpage-qqra-a494f6cia.vercel.app/', # The NEW URL from your error
     'https://contact-list-webpage-qqra.vercel.app',         # Your main Vercel URL
     'http://127.0.0.1:5173',                                # Local React
     'http://localhost:5173',                                # Local React
