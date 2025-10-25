@@ -1,3 +1,5 @@
+# --- FILENAME: backend/api/settings.py ---
+
 import os
 from dotenv import load_dotenv
 from pathlib import Path
@@ -9,18 +11,24 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECRET KEY - This MUST be set in Render's Environment Variables
+# --- RENDER/PRODUCTION SECRET KEYS ---
+# These MUST be set in Render's Environment Variables
 SECRET_KEY = os.environ.get('SECRET_KEY')
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
+# DEBUG - Set to False for production
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-# ALLOWED_HOSTS - This list is for BACKEND's domain names
+
+# --- FIX for 400 Bad Request ---
+# This list is for YOUR BACKEND's domain names
 ALLOWED_HOSTS = [
-    'contact-app-oa5s.onrender.com',  # Render backend
+    'contact-app-oa5s.onrender.com',  # Your Render backend
     '127.0.0.1',                      # For local testing
 ]
 
-# Application definition
+
+# --- APPLICATION DEFINITION ---
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -28,17 +36,21 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    # Your apps
     'contacts',
+    
+    # 3rd Party Apps
     'rest_framework',
-    'corsheaders',
-    'rest_framework.authtoken',
+    'rest_framework.authtoken', # For token login
+    'corsheaders',              # For Vercel/Render communication
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     
-    # CorsMiddleware must be as high as possible, especially before CommonMiddleware
+    # CorsMiddleware must be as high as possible
     'corsheaders.middleware.CorsMiddleware', 
     
     'django.middleware.common.CommonMiddleware',
@@ -68,24 +80,41 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'api.wsgi.application'
 
-# Database
-# This MUST be set in Render's Environment Variables
+
+# --- DATABASE ---
+# Reads the DATABASE_URL from Render's Environment Variables
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL'),
+        default=DATABASE_URL,
         conn_max_age=600
     )
 }
 
+# --- FIX for the CORS Error ---
 # This list is for YOUR FRONTEND's domain names
 CORS_ALLOWED_ORIGINS = [
-    'https://contact-list-webpage-qqra-gdhgs9m2t.vercel.app',
-    'https://contact-list-webpage-qqra.vercel.app',         
-    'http://127.0.0.1:5173',                                
-    'http://localhost:5173',                                
+    'https://contact-list-webpage-qqra-gdhgs9m2t.vercel.app', # The NEW URL from your error
+    'https://contact-list-webpage-qqra.vercel.app',         # Your main Vercel URL
+    'http://127.0.0.1:5173',                                # Local React
+    'http://localhost:5173',                                # Local React
 ]
 
-# Password validation
+
+# --- AUTHENTICATION SETTINGS ---
+# This enables Token Auth and sets permissions
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication', 
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        # Allows anyone to VIEW (GET)
+        # Requires login for ADD/DELETE (POST/DELETE)
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ]
+}
+
+
+# --- PASSWORD VALIDATION ---
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -93,28 +122,17 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# This tells DRF to use Token auth and sets the permissions
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        # This allows us to use 'Authorization: Token <key>'
-        'rest_framework.authentication.TokenAuthentication', 
-    ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        # This is the magic line:
-        # It allows anyone to VIEW (GET) but requires login for ADD/DELETE (POST/DELETE)
-        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
-    ]
-}
 
-# Internationalization
+# --- INTERNATIONALIZATION ---
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-STATIC_URL = '/static/'
+
+# --- STATIC FILES ---
+STATIC_URL = '/static/' # This path is correct
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# Default primary key field type
+# --- DEFAULT PRIMARY KEY ---
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

@@ -1,23 +1,26 @@
 import { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
-import ContactCard from './ContactCard'; // <-- We'll use the component
+import ContactCard from './ContactCard';
 import './App.css';
 
-// Your live Render API URL
+// Your API URLs
 const API_URL = 'https://contact-app-oa5s.onrender.com/api/contacts/';
+const LOGIN_URL = 'https://contact-app-oa5s.onrender.com/api-token-auth/';
 
 function App() {
   const [contacts, setContacts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState(null);
-
-  // --- NEW AUTH STATE ---
-  // Try to get the token from browser storage
+  
+  // Auth State
   const [token, setToken] = useState(localStorage.getItem('apiToken') || '');
-  // State for the login input box
-  const [tokenInput, setTokenInput] = useState('');
+  
+  // Login Form State
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
-  // --- NEW FORM STATE ---
+  // Add Contact Form State
+  const [showAddForm, setShowAddForm] = useState(false);
   const [newName, setNewName] = useState('');
   const [newEmail, setNewEmail] = useState('');
   const [newPhone, setNewPhone] = useState('');
@@ -29,16 +32,16 @@ function App() {
       .then(res => setContacts(res.data))
       .catch(err => {
         console.error("Error fetching contacts:", err);
-        setError('Could not fetch contacts.');
+        setError('Could not fetch contacts. (Check CORS or Render logs)');
       });
   };
 
   // 2. Fetch contacts on initial load
   useEffect(() => {
     fetchContacts();
-  }, []);
+  }, []); // The empty array [] means this runs only once
 
-  // 3. Filter contacts based on search
+  // 3. Filter contacts
   const filteredContacts = useMemo(() => {
     return contacts.filter(contact =>
       contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -46,35 +49,46 @@ function App() {
     );
   }, [contacts, searchTerm]);
 
-  // --- 4. NEW: Handle Login ---
+  // 4. Handle Login
   const handleLogin = (e) => {
     e.preventDefault();
-    setToken(tokenInput);
-    localStorage.setItem('apiToken', tokenInput); // Save token to browser
+    setError(null);
+    
+    axios.post(LOGIN_URL, { username, password })
+      .then(res => {
+        const receivedToken = res.data.token;
+        setToken(receivedToken);
+        localStorage.setItem('apiToken', receivedToken); // Save token
+        setUsername(''); // Clear form
+        setPassword(''); // Clear form
+      })
+      .catch(err => {
+        console.error("Login error:", err);
+        setError('Invalid username or password.');
+      });
   };
 
-  // --- 5. NEW: Handle Logout ---
+  // 5. Handle Logout
   const handleLogout = () => {
     setToken('');
-    setTokenInput('');
-    localStorage.removeItem('apiToken'); // Remove token
+    localStorage.removeItem('apiToken');
   };
 
-  // --- 6. UPDATED: Handle Add Contact ---
+  // 6. Handle Add Contact
   const handleAddSubmit = (e) => {
     e.preventDefault();
     if (!newName || !newEmail) return;
-
+    
     const newContact = { name: newName, email: newEmail, phone: newPhone };
 
     axios.post(API_URL, newContact, {
-      // We must send the token in the headers to prove we are logged in
       headers: { 'Authorization': `Token ${token}` }
     })
     .then(res => {
       setNewName('');
       setNewEmail('');
       setNewPhone('');
+      setShowAddForm(false); // Close the form
       fetchContacts(); // Refresh list
     })
     .catch(err => {
@@ -83,17 +97,14 @@ function App() {
     });
   };
 
-  // --- 7. NEW: Handle Delete Contact ---
+  // 7. Handle Delete Contact
   const handleDelete = (idToDelete) => {
     if (!window.confirm("Are you sure you want to delete this contact?")) return;
 
     axios.delete(`${API_URL}${idToDelete}/`, {
-      // We also need the token to delete
       headers: { 'Authorization': `Token ${token}` }
     })
-    .then(() => {
-      fetchContacts(); // Refresh list
-    })
+    .then(() => fetchContacts()) // Refresh list
     .catch(err => {
       console.error("Error deleting contact:", err);
       setError('Failed to delete contact. Is your token correct?');
@@ -101,83 +112,79 @@ function App() {
   };
 
   return (
-    <div className="app">
+    <div className="app-container">
       <h1>My Contact List</h1>
 
-      {/* --- NEW: LOGIN/LOGOUT UI --- */}
-      {token ? (
-        <div className="login-box">
-          <p>You are logged in.</p>
-          <button onClick={handleLogout} className="logout-button">Log Out</button>
-        </div>
-      ) : (
-        <form onSubmit={handleLogin} className="login-box">
-          <p>Paste your API Token to Add/Delete:</p>
-          <input
-            type="password"
-            placeholder="Your API Token..."
-            value={tokenInput}
-            onChange={(e) => setTokenInput(e.target.value)}
-          />
-          <button type="submit">Log In</button>
-        </form>
-      )}
-
-      {/* --- ADD CONTACT FORM (Only shows if logged in) --- */}
-      {token && (
-        <form onSubmit={handleAddSubmit} className="contact-form">
-          <h3>Add New Contact</h3>
-          <input
-            type="text"
-            placeholder="Name"
-            value={newName}
-            onChange={(e) => setNewName(e.target.value)}
-            required
-          />
-          <input
-            type="email"
-            placeholder="Email"
-            value={newEmail}
-            onChange={(e) => setNewEmail(e.target.value)}
-            required
-          />
-          <input
-            type="tel"
-            placeholder="Phone (Optional)"
-            value={newPhone}
-            onChange={(e) => setNewPhone(e.target.value)}
-          />
-          <button type="submit">Add Contact</button>
-        </form>
-      )}
-
-      <hr />
-
-      {/* --- SEARCH BAR --- */}
-      <div className="search-container">
-        <input
-          type="search"
-          placeholder="Search by name or email..."
-          className="search-bar"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+      <div className="header-controls">
+        <input 
+          type="search" 
+          placeholder="Search by name or email..." 
+          className="search-bar" 
+          value={searchTerm} 
+          onChange={(e) => setSearchTerm(e.target.value)} 
         />
+        
+        {/* --- LOGIN/LOGOUT UI --- */}
+        {token ? (
+          <div className="login-box">
+            <span>Logged In</span>
+            <button onClick={handleLogout} className="logout-button">Log Out</button>
+          </div>
+        ) : (
+          <form onSubmit={handleLogin} className="login-box">
+            <input
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button type="submit">Log In</button>
+          </form>
+        )}
       </div>
 
+      {/* --- ADD CONTACT BUTTON AND FORM --- */}
+      {token && (
+        <div className="add-contact-container">
+          <button 
+            onClick={() => setShowAddForm(!showAddForm)} 
+            className="add-contact-toggle"
+          >
+            {showAddForm ? 'Cancel' : 'Add New Contact'}
+          </button>
+          
+          {showAddForm && (
+            <form onSubmit={handleAddSubmit} className="add-contact-form">
+              <h3>Add New Contact</h3>
+              <input type="text" placeholder="Name" value={newName} onChange={(e) => setNewName(e.g.target.value)} required />
+              <input type="email" placeholder="Email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} required />
+              <input type="tel" placeholder="Phone (Optional)" value={newPhone} onChange={(e) => setNewPhone(e.target.value)} />
+              <button type="submit">Save Contact</button>
+            </form>
+          )}
+        </div>
+      )}
+      
       {/* --- CONTACT LIST --- */}
-      <div className="contact-list">
+      <div className="contact-grid">
         {error && <p className="error-message">{error}</p>}
         {filteredContacts.length > 0 ? (
           filteredContacts.map(contact => (
             <ContactCard
               key={contact.id}
               contact={contact}
-              isLoggedIn={!!token} // Pass login status
-              onDelete={handleDelete} // Pass delete function
+              isLoggedIn={!!token}
+              onDelete={handleDelete}
             />
           ))
         ) : (
-          <p>No contacts found.</p>
+          <p>{contacts.length > 0 ? "No contacts match your search." : "No contacts found."}</p>
         )}
       </div>
     </div>
