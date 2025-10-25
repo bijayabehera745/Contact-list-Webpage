@@ -162,7 +162,7 @@ function App() {
           {showAddForm && (
             <form onSubmit={handleAddSubmit} className="add-contact-form">
               <h3>Add New Contact</h3>
-              <input type="text" placeholder="Name" value={newName} onChange={(e) => setNewName(e.g.target.value)} required />
+              <input type="text" placeholder="Name" value={newName} onChange={(e) => setNewName(e.target.value)} required />
               <input type="email" placeholder="Email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} required />
               <input type="tel" placeholder="Phone (Optional)" value={newPhone} onChange={(e) => setNewPhone(e.target.value)} />
               <button type="submit">Save Contact</button>
